@@ -1,0 +1,100 @@
+/* Reset de base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f9fafb;
+}
+
+/* Layout principal */
+.app-container {
+  display: flex;
+  height: 100vh;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+/* Sidebar (liste des salles) */
+.sidebar {
+  width: 25%;
+  background: #fff;
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Zone de chat */
+.chat-area {
+  flex: 1;
+  background: #fff;
+  border-radius: 1rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 📱 Responsive : sur petit écran, sidebar passe au-dessus */
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .chat-area {
+    width: 100%;
+  }
+}
+
+/* Messages dans le chat */
+.message-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Bulle de message */
+.message {
+  max-width: 70%;
+  padding: 0.6rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+/* Message de l’utilisateur connecté */
+.message.me {
+  background-color: #4f46e5;
+  color: white;
+  align-self: flex-end;
+  border-bottom-right-radius: 0.2rem;
+}
+
+/* Message des autres */
+.message.other {
+  background-color: #f3f4f6;
+  color: #111827;
+  align-self: flex-start;
+  border-bottom-left-radius: 0.2rem;
+}
+
+/* Horodatage */
+.message .timestamp {
+  font-size: 0.7rem;
+  color: #6b7280;
+  margin-top: 0.2rem;
+  display: block;
+  text-align: right;
+}
