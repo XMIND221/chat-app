@@ -1,133 +1,73 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { io } from "socket.io-client";
+
+// connexion au backend
+const socket = io("http://localhost:5000");
 
 function App() {
+  const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<string[]>([]);
-  const [newMessage, setNewMessage] = useState("");
 
-  const handleSend = (e: React.FormEvent) => {
+  // écouter les nouveaux messages
+  useEffect(() => {
+    socket.on("newMessage", (msg) => {
+      setMessages((prev) => [...prev, msg.content]); // on ajoute le nouveau message
+    });
+
+    return () => {
+      socket.off("newMessage");
+    };
+  }, []);
+
+  // envoyer un message au backend
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (newMessage.trim() === "") return;
-    setMessages([...messages, newMessage]);
-    setNewMessage("");
+    if (!message.trim()) return;
+
+    socket.emit("sendMessage", {
+      content: message,
+      senderId: "user1", // tu pourras mettre un vrai user plus tard
+      roomId: "general", // on utilise une salle "générale" par défaut
+    });
+
+    setMessage("");
   };
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.header}>💬 Chat App</h1>
+    <div className="p-6 max-w-md mx-auto">
+      <h1 className="text-2xl font-bold mb-4">💬 Chat-App</h1>
 
-      <div style={styles.chatBox}>
+      {/* messages */}
+      <div className="border p-3 rounded h-64 overflow-y-auto mb-4 bg-gray-100">
         {messages.length === 0 ? (
-          <p style={styles.placeholder}>Aucun message pour le moment...</p>
+          <p className="text-gray-500">Aucun message pour l’instant...</p>
         ) : (
           messages.map((msg, i) => (
-            <div
-              key={i}
-              style={{
-                ...styles.message,
-                ...(i % 2 === 0 ? styles.myMessage : styles.otherMessage),
-              }}
-            >
+            <p key={i} className="mb-1">
               {msg}
-            </div>
+            </p>
           ))
         )}
       </div>
 
-      <form onSubmit={handleSend} style={styles.form}>
+      {/* formulaire */}
+      <form onSubmit={handleSubmit} className="flex gap-2">
         <input
           type="text"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
           placeholder="Écris ton message..."
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          style={styles.input}
+          className="flex-1 border rounded px-2 py-1"
         />
-        <button type="submit" style={styles.button}>
-          ➤
+        <button
+          type="submit"
+          className="bg-blue-500 text-white px-3 py-1 rounded"
+        >
+          Envoyer
         </button>
       </form>
     </div>
   );
 }
-
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    maxWidth: "500px",
-    margin: "40px auto",
-    padding: "20px",
-    borderRadius: "16px",
-    fontFamily: "Segoe UI, Arial, sans-serif",
-    background: "linear-gradient(135deg, #f5f7fa, #c3cfe2)",
-    boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
-  },
-  header: {
-    textAlign: "center",
-    color: "#1976d2",
-    fontSize: "1.8rem",
-    marginBottom: "20px",
-    fontWeight: 600,
-  },
-  chatBox: {
-    height: "350px",
-    overflowY: "auto",
-    padding: "15px",
-    marginBottom: "20px",
-    borderRadius: "12px",
-    backgroundColor: "#fff",
-    boxShadow: "inset 0 2px 6px rgba(0,0,0,0.05)",
-  },
-  placeholder: {
-    color: "#aaa",
-    textAlign: "center",
-    marginTop: "40px",
-    fontStyle: "italic",
-  },
-  message: {
-    padding: "10px 15px",
-    margin: "8px 0",
-    borderRadius: "18px",
-    maxWidth: "70%",
-    wordWrap: "break-word",
-    boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-    fontSize: "0.95rem",
-  },
-  myMessage: {
-    backgroundColor: "#1976d2",
-    color: "#fff",
-    marginLeft: "auto",
-    borderBottomRightRadius: "4px",
-  },
-  otherMessage: {
-    backgroundColor: "#e0e0e0",
-    color: "#333",
-    marginRight: "auto",
-    borderBottomLeftRadius: "4px",
-  },
-  form: {
-    display: "flex",
-    gap: "10px",
-    alignItems: "center",
-  },
-  input: {
-    flex: 1,
-    padding: "12px",
-    borderRadius: "20px",
-    border: "1px solid #ccc",
-    outline: "none",
-    fontSize: "1rem",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
-  },
-  button: {
-    width: "45px",
-    height: "45px",
-    border: "none",
-    borderRadius: "50%",
-    backgroundColor: "#1976d2",
-    color: "#fff",
-    fontSize: "1.2rem",
-    cursor: "pointer",
-    boxShadow: "0 3px 8px rgba(0,0,0,0.2)",
-    transition: "0.3s",
-  },
-};
 
 export default App;

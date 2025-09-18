@@ -38,7 +38,7 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* 📱 Responsive : sur petit écran, sidebar passe au-dessus */
+/* 📱 Responsive */
 @media (max-width: 768px) {
   .app-container {
     flex-direction: column;
@@ -54,7 +54,7 @@ body {
   }
 }
 
-/* Messages dans le chat */
+/* Messages */
 .message-list {
   flex: 1;
   overflow-y: auto;
@@ -64,7 +64,6 @@ body {
   gap: 0.5rem;
 }
 
-/* Bulle de message */
 .message {
   max-width: 70%;
   padding: 0.6rem 1rem;
@@ -74,7 +73,6 @@ body {
   word-wrap: break-word;
 }
 
-/* Message de l’utilisateur connecté */
 .message.me {
   background-color: #4f46e5;
   color: white;
@@ -82,7 +80,6 @@ body {
   border-bottom-right-radius: 0.2rem;
 }
 
-/* Message des autres */
 .message.other {
   background-color: #f3f4f6;
   color: #111827;
@@ -90,7 +87,6 @@ body {
   border-bottom-left-radius: 0.2rem;
 }
 
-/* Horodatage */
 .message .timestamp {
   font-size: 0.7rem;
   color: #6b7280;
@@ -98,3 +94,6 @@ body {
   display: block;
   text-align: right;
 }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

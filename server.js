@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const { Server } = require("socket.io");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const path = require("path");
 
 // Modèles
 const Message = require("./models/Message");
@@ -14,7 +15,7 @@ const User = require("./models/User"); // si tu as ce modèle
 // Routes
 const authRoutes = require("./routes/auth");
 const chatRoomsRoutes = require("./routes/chatRooms");
-const messagesRoutes = require("./routes/messages"); // correspond à routes/messages.js
+const messagesRoutes = require("./routes/messages");
 
 dotenv.config();
 
@@ -29,10 +30,11 @@ app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(express.json());
 
 // Connexion MongoDB
-mongoose.connect(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/chat-app", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose
+  .connect(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/chat-app", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => console.log("✅ Connexion MongoDB réussie"))
   .catch((err) => console.error("❌ Erreur de connexion MongoDB :", err));
 
@@ -41,9 +43,11 @@ app.use("/api/auth", authRoutes);
 app.use("/api/chatRooms", chatRoomsRoutes);
 app.use("/api/messages", messagesRoutes);
 
-// Route test
-app.get("/", (req, res) => {
-  res.send("Bienvenue sur le serveur Chat-App 🚀");
+// ---- 👉 Servir le frontend React (après build) ----
+app.use(express.static(path.join(__dirname, "client/dist")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client/dist", "index.html"));
 });
 
 // Socket.IO
@@ -64,7 +68,11 @@ io.on("connection", (socket) => {
 
   socket.on("sendMessage", async ({ content, senderId, roomId }) => {
     try {
-      const message = await Message.create({ content, sender: senderId, room: roomId });
+      const message = await Message.create({
+        content,
+        sender: senderId,
+        room: roomId,
+      });
       io.to(roomId).emit("newMessage", message);
     } catch (err) {
       console.error(err);
