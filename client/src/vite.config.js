@@ -3,5 +3,5 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
     plugins: [react()],
-    base: '/chat-app/'  // <--- important pour GitHub Pages
+    base: '/chat-app/'   // <- essentiel pour GitHub Pages
 })
